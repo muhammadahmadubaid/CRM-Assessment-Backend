@@ -30,9 +30,12 @@ export class CustomersService {
 
     const qb = this.customers
       .createQueryBuilder('c')
+      .withDeleted()
       .leftJoinAndSelect('c.assignee', 'assignee')
       .where('c.organizationId = :orgId', { orgId: user.organizationId })
-      .andWhere('c.deletedAt IS NULL');
+      .andWhere(
+        query.deleted ? 'c.deletedAt IS NOT NULL' : 'c.deletedAt IS NULL',
+      );
 
     if (query.search) {
       qb.andWhere(
